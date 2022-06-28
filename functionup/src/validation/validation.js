@@ -6,7 +6,7 @@ let userCheck = /^[a-zA-Z\-]+$/;
 let mailRegex = /^[a-zA-Z][a-zA-Z0-9\-\_\.]+@[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}$/;
 let validPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 
-const isValidObjectId = function (x) {            // Check mongo Id 
+const isValidObjectId = function (x) {            
     return mongoose.Types.ObjectId.isValid(x)
 }
 
@@ -39,13 +39,14 @@ const createAuthMid = async function (req, res, next) {
 
         let password = req.body.password
         if (typeof (password) != 'string' || !password) return res.status(403).send({ msg: "password is required" })
-        if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
+       if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
 
 
         const autherMail = await AuthorModel.findOne({ email: data.email }); //email exist or not
         if (autherMail) { return res.status(404).send({ status: false, msg: "Email already exist" }); }
 
         next()
+        
     } catch (error) {
         console.log("This is the error :", error.message)
         res.status(500).send({ msg: "Error", error: error.message })
@@ -68,7 +69,7 @@ const blogSchemaValidation = async function (req, res, next) {
 
         let authorId = req.body.authorId
         if (typeof (authorId) != 'string' || !authorId) return res.status(400).send({ msg: "authorId is need to be given" })
-        if (!isValidObjectId(blogId)) return res.status(400).send({ status: false, msg: "invalid blogId" })
+        if (!isValidObjectId(authorId)) return res.status(400).send({ status: false, msg: "invalid AuthorId" })
 
         let category = req.body.category
         if (!category) return res.status(400).send({ status: false, msg: "category is need to required" })
@@ -147,13 +148,13 @@ const deleteByParMid = async function (req, res, next) {
 const checkEmailandPassword = async function (req, res, next) {
     try {
 
-        let email = req.body.emailId;
+        let email = req.body.email;
         let password = req.body.password;
         if (!email) return res.status(400).send({ status: false, msg: "Email-Id is required" });
         if (!email.match(mailRegex)) return res.status(400).send({ msg: "Email-Id is not valid" })
 
          if (!password) return res.status(400).send({ status: false, msg: "Password is required" });
-         if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
+       if (!password.match(validPassword)) return res.status(400).send({ msg: "Password is not valid. Must be contain 1 UpperCase alphabet and minimum 8 elements and not allowed special character" })
         next()
     }
     catch (error) {
